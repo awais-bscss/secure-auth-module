@@ -33,21 +33,23 @@ function hashToken(token: string): string {
 }
 
 function getRefreshTokenCookieOptions(maxAgeMs: number) {
+  const isCrossSite = process.env.COOKIE_CROSS_SITE === 'true';
   return {
     httpOnly: true,
-    sameSite: 'strict' as const,
+    sameSite: isCrossSite ? ('none' as const) : ('strict' as const),
     path: '/auth',
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' || isCrossSite,
     maxAge: maxAgeMs,
   };
 }
 
 function getClearCookieOptions() {
+  const isCrossSite = process.env.COOKIE_CROSS_SITE === 'true';
   return {
     httpOnly: true,
-    sameSite: 'strict' as const,
+    sameSite: isCrossSite ? ('none' as const) : ('strict' as const),
     path: '/auth',
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' || isCrossSite,
   };
 }
 

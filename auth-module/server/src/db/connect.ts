@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 
 export async function connectDB(uri: string): Promise<void> {
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
   try {
     await mongoose.connect(uri);
     console.log('[Database] Connected to MongoDB successfully.');
@@ -44,6 +47,9 @@ export async function connectDB(uri: string): Promise<void> {
     }
   } catch (error) {
     console.error('[Database] Failed to connect to MongoDB:', error);
-    process.exit(1);
+    if (!process.env.VERCEL) {
+      process.exit(1);
+    }
+    throw error;
   }
 }
